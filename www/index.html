@@ -22,38 +22,66 @@
             color: red;
         }
 
+        .container {
+            display: flex;
+        }
+
+        .json-viewer-container {
+            flex: 1;
+        }
+
+        .container > div {
+            margin: 0 20px
+        }
+
     </style>
 </head>
 <body>
-    <h1>IvanOS Log Debugger</h1>
-    <p class="status">
-        <span>Status: </span>
-        <span class="connected">Connected</span>
-        <span class="disconnected">Disconnected</span>
-    </p>
-    <section>
-        <p>
-            Open developer console to see logs.
-        </p>
-        <p>You may use console filtering for log filtering</p>
-        <section>
-            <h2>Commands:</h2>
-            <table>
-                <tr>
-                    <th>command</th>
-                    <th>description</th>
-                </tr>
-                <tr>
-                    <td><a href="javascript:osl.snapshot()">osl.snapshot()</a></td>
-                    <td>list of currently available logs</td>
-                </tr>
-                <tr>
-                    <td><a href="javascript:console.clear()">console.clear()</a></td>
-                    <td>Clear console</td>
-                </tr>
-            </table>
-        </section>
-    </section>
+    <div class="container">
+        <div>
+            <h1>IvanOS Log Debugger</h1>
+            <p class="status">
+                <span>Status: </span>
+                <span class="connected">Connected</span>
+                <span class="disconnected">Disconnected</span>
+            </p>
+            <section>
+                <p>
+                    Open developer console to see logs.
+                </p>
+                <!--<p>You may use console filtering for log filtering</p>-->
+                <section>
+                    <h2>Commands:</h2>
+                    <table>
+                        <tr>
+                            <th>command</th>
+                            <th>description</th>
+                        </tr>
+                        <tr>
+                            <td><a href="javascript:osl.snapshot()">osl.snapshot()</a></td>
+                            <td>list of currently available logs</td>
+                        </tr>
+                        <tr>
+                            <td><a href="javascript:console.clear()">console.clear()</a></td>
+                            <td>Clear console</td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+        </div>
+        <!--<div class="log-list-container">-->
+            <!--<ul>-->
+                <!--<li>Log 1:</li>-->
+                <!--<li>Log 2:</li>-->
+                <!--<li>Log 3:</li>-->
+                <!--<li>Log 4:</li>-->
+                <!--<li>Log 5:</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+        <!--<div class="json-viewer-container">-->
+            <!--<p>JSON goes here</p>-->
+        <!--</div>-->
+    </div>
 
     <script src="app.js"></script>
 </body>
