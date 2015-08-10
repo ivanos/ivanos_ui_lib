@@ -5,6 +5,10 @@
     <title></title>
     <style>
 
+        body {
+            margin: 0;
+        }
+
         .status.connected .connected {
             display: inline;
         }
@@ -24,14 +28,28 @@
 
         .container {
             display: flex;
+
+            justify-content: center;
+            align-items: stretch;
+            height: 100%;
+            width: 100%;
+            position: absolute;
         }
 
         .json-viewer-container {
             flex: 1;
         }
 
+        .log-list-container {
+            overflow: auto;
+        }
+
         .container > div {
             margin: 0 20px
+        }
+
+        .log-list-container li.selected {
+            background-color: darkgray;
         }
 
     </style>
@@ -51,7 +69,7 @@
                 </p>
                 <!--<p>You may use console filtering for log filtering</p>-->
                 <section>
-                    <h2>Commands:</h2>
+                    <h2>Console Commands:</h2>
                     <table>
                         <tr>
                             <th>command</th>
@@ -69,20 +87,27 @@
                 </section>
             </section>
         </div>
-        <!--<div class="log-list-container">-->
-            <!--<ul>-->
-                <!--<li>Log 1:</li>-->
-                <!--<li>Log 2:</li>-->
-                <!--<li>Log 3:</li>-->
-                <!--<li>Log 4:</li>-->
-                <!--<li>Log 5:</li>-->
-            <!--</ul>-->
-        <!--</div>-->
-        <!--<div class="json-viewer-container">-->
-            <!--<p>JSON goes here</p>-->
-        <!--</div>-->
+        <div class="log-list-container">
+            <h1>Log Entries:</h1>
+            <ul>
+                <li>Log 1:</li>
+                <li>Log 2:</li>
+                <li>Log 3:</li>
+                <li>Log 4:</li>
+                <li>Log 5:</li>
+            </ul>
+        </div>
+        <div class="json-viewer-container">
+            <h1>Log Entry:</h1>
+            <div>
+                <h3>info</h3>
+                <time>Today</time>
+                <pre></pre>
+            </div>
+        </div>
     </div>
 
+    <script src="./lib/jquery/dist/jquery.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

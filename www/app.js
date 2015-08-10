@@ -11,7 +11,7 @@ function debug(connection) {
     function entry() {
         return {
             string: "secret",
-            number: 123,
+            number: Math.random(),
             boolean: true,
             array: ["1", "2", "3"],
             object: {kitten: "mew"}
@@ -36,6 +36,8 @@ var osl = {};
 
 function app(connectionUrl) {
     var connection = new WebSocket(connectionUrl);
+
+    logView.reset();
 
     connection.onopen = function () {
         document.querySelector(".status").classList.add("connected");
@@ -64,6 +66,7 @@ function app(connectionUrl) {
 
     function publishLog(log) {
         console.log(new Date(log.timestamp), log.info, log.entry);
+        logView.addLogEntry(log);
     }
 
     var logEntries = [];
@@ -75,3 +78,47 @@ function app(connectionUrl) {
 
     return connection;
 }
+
+/***
+ * log = {
+ *      timestamp
+ *      info
+ *      entry
+ * }
+ *
+ */
+
+var logView = {
+    reset: function() {
+        var $logsContainer = $(".log-list-container ul");
+        $logsContainer.children("li").remove();
+        $logsContainer.off();
+
+        $logsContainer.on("click", "li", null, function() {
+            $logsContainer.children("li").removeClass("selected");
+            $(this).addClass("selected");
+
+            logView.displayLog($(this).data("log"));
+        });
+
+        var $logContainer = $(".json-viewer-container > div");
+        $logContainer.children().remove();
+
+        $logContainer.append("<h3></h3><time></time><pre></pre>");
+    },
+
+    addLogEntry: function(log) {
+        var $entry = $("<li>")
+            .text(new Date(log.timestamp) + ", " + log.info)
+            .data({log: log});
+        $(".log-list-container ul").append($entry)
+    },
+
+    displayLog: function(log) {
+        var $logContainer = $(".json-viewer-container > div");
+        $logContainer.children("pre").text(JSON.stringify(log.entry, null, 4));
+        $logContainer.children("h3").text(log.info);
+        $logContainer.children("time").text(new Date(log.timestamp));
+    }
+};
+
