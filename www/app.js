@@ -14,7 +14,9 @@ function debug(connection) {
             number: Math.random(),
             boolean: true,
             array: ["1", "2", "3"],
-            object: {kitten: "mew"}
+            object: {kitten: "mew"},
+            "null": null,
+            DOM: document
         }
     }
 
@@ -102,23 +104,100 @@ var logView = {
         });
 
         var $logContainer = $(".json-viewer-container > div");
+        $logContainer.children("pre").off();
         $logContainer.children().remove();
+        $logContainer.append("<h3></h3><time></time><pre class='prettyprint'></pre>");
 
-        $logContainer.append("<h3></h3><time></time><pre></pre>");
+        $logContainer.children("pre").on("click", ".entry .key", null, function() {
+            $(this).parent(".entry").toggleClass("collapsed");
+        });
+
     },
 
     addLogEntry: function(log) {
         var $entry = $("<li>")
             .text(new Date(log.timestamp) + ", " + log.info)
             .data({log: log});
-        $(".log-list-container ul").append($entry)
+        $(".log-list-container ul").prepend($entry);
     },
 
     displayLog: function(log) {
         var $logContainer = $(".json-viewer-container > div");
-        $logContainer.children("pre").text(JSON.stringify(log.entry, null, 4));
         $logContainer.children("h3").text(log.info);
         $logContainer.children("time").text(new Date(log.timestamp));
+
+        $logContainer.children("pre").html(getHTMLConverter(log.entry)(log.entry));
+        $logContainer.children(".prettyprinted").removeClass("prettyprinted");
+
     }
 };
 
+/**
+ * Number	double- precision floating-point format in JavaScript
+ String	double-quoted Unicode with backslash escaping
+ Boolean	true or false
+ Array	an ordered sequence of values
+ Value	it can be a string, a number, true or false, null etc
+ Object	an unordered collection of key:value pairs
+ Whitespace	can be used between any pair of tokens
+ null
+ * @param $code
+ */
+
+function getHTMLConverter(token) {
+    switch (typeof token) {
+        case 'object':
+            if (token === null) {return nullToHTML}
+            if (Array.isArray(token)) {return arrToHTML}
+            return objToHTML;
+        case 'boolean':
+            return boolToHTML;
+        case 'string':
+            return strToHTML;
+        case 'number':
+            return numToHTML;
+        default:
+            return function() {return "error parsing json"}
+    }
+}
+
+var comma = "<span class='comma'>,</span>",
+    squareOpen = "<span class='square open'>[</span>",
+    squareClose = "<span class='square close'>]</span>",
+    curlyOpen = "<span class='curly open'>{</span>",
+    curlyClose = "<span class='curly close'>}</span>";
+
+function objToHTML(obj) {
+    var keys = Object.keys(obj);
+    return keys.reduce(function(res, key, index, items) {
+        var token = obj[key],
+            converter = getHTMLConverter(token);
+            return res +=
+                "<span class='entry'><span class='key'>\"" +
+                    key +
+                "\"</span><span class='col'>:</span><span class='val'>" + converter(token) + "</span>" + (index + 1 == items.length ? "" : comma) + "</span>";
+    }, "<span class='obj' data-items='Object{" + keys.length + "}'>" + curlyOpen) + curlyClose + "</span>"
+}
+
+function arrToHTML(arr) {
+    return arr.reduce(function(res, token, index, items) {
+            var converter = getHTMLConverter(token);
+            return res += "<span class='entry'><span class='val'>" + converter(token) + "</span>" + (index + 1 == items.length ? "" : comma) + "</span>";
+        }, "<span class='arr' data-items='Array[" + arr.length + "]'>" + squareOpen) + squareClose + "</span>"
+}
+
+function strToHTML(str) {
+    return "<span class='str'>\"" + str + "\"</span>"
+}
+
+function boolToHTML(bool) {
+    return "<span class='bool'>" + (bool ? "true" : "false") + "</span>"
+}
+
+function numToHTML(num) {
+    return "<span class='num'>" + num + "</span>"
+}
+
+function nullToHTML() {
+    return "<span class='null'>null</span>"
+}

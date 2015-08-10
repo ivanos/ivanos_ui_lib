@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>IvanOS Log Debugger</title>
+
     <style>
 
         body {
@@ -52,7 +53,46 @@
             background-color: darkgray;
         }
 
+
+        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+        .string { color: green; }
+        .num { color: blue; }
+        .bool { color: blue; }
+        .null { color: blue; }
+        .key { color: darkmagenta; }
+
+        .col::after {
+            content: " ";
+        }
+
+        .entry {
+            display: block;
+        }
+
+        .arr>.entry,
+        .obj>.entry {
+            margin-left: 2ch;
+        }
+
+        .arr>.comma::after {
+            display: block;
+        }
+
+        .entry.collapsed .obj>*,
+        .entry.collapsed .arr>* {
+            display: none;
+        }
+
+        .entry.collapsed .obj::after {
+            content: attr(data-items);
+        }
+
+        .entry.collapsed .arr::after {
+            content: attr(data-items);
+        }
+
     </style>
+
 </head>
 <body>
     <div class="container">
