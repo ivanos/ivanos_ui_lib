@@ -42,6 +42,11 @@
         }
 
         .log-list-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .log-list-container > div {
             overflow: auto;
         }
 
@@ -135,13 +140,15 @@
         </div>
         <div class="log-list-container">
             <h1>Log Entries:</h1>
-            <ul>
-                <li>Log 1:</li>
-                <li>Log 2:</li>
-                <li>Log 3:</li>
-                <li>Log 4:</li>
-                <li>Log 5:</li>
-            </ul>
+            <div>
+                <ul>
+                    <li>Log 1:</li>
+                    <li>Log 2:</li>
+                    <li>Log 3:</li>
+                    <li>Log 4:</li>
+                    <li>Log 5:</li>
+                </ul>
+            </div>
         </div>
         <div class="json-viewer-container">
             <h1>Log Entry:</h1>
