@@ -1,6 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", function() {
-    var connectionUrl = "ws://" + location.host + "/ivanos/packet_debug_stream";
+    var connectionUrl = "ws://" + location.host + "/lager/websocket";
+    //var connectionUrl = "ws://localhost:8080/lager/websocket";
     //var connectionUrl = 'ws://html5rocks.websocket.org/echo';
 
     app(connectionUrl);
@@ -22,11 +23,10 @@ function debug(connection) {
 
     setInterval(function() {
         var testJson = {
-            "log": {
-                "timestamp":  Date.now(),
-                "info": "<generating process, etc>",
-                "entry": entry()
-            }
+            "date":  Date.now(),
+            "message": "generating process, etc",
+            "severity": "info",
+            "metadata": entry()
         };
 
         connection.send(JSON.stringify(testJson));
@@ -34,49 +34,56 @@ function debug(connection) {
 
 }
 
-var osl = {};
-
 function app(connectionUrl) {
-    var connection = new WebSocket(connectionUrl);
 
     logView.reset();
 
-    connection.onopen = function () {
-        document.querySelector(".status").classList.add("connected");
-        console.info('WebSocket Connection established');
+    var logEntries = [],
+        connection = createConnection();
 
-        debug(connection);
-    };
+    function createConnection() {
+        //connection.close();
 
-    // Log errors
-    connection.onerror = function (error) {
-        document.querySelector(".status").classList.remove("connected");
-        console.error('WebSocket Connection Error', error);
-    };
+        var ws = new WebSocket(connectionUrl);
 
-    // Log messages from the server
-    connection.onmessage = function (e) {
-        var log = parseLog(e.data);
-        logEntries.push(log);
+        ws.onopen = function () {
+            document.querySelector(".status").classList.add("connected");
+            console.info('WebSocket Connection established');
+        };
 
-        publishLog(log);
-    };
+        // Log errors
+        ws.onerror = function (error) {
+            document.querySelector(".status").classList.remove("connected");
+            console.error('WebSocket Connection Error', error);
+        };
+
+        ws.onclose = function (error) {
+            document.querySelector(".status").classList.remove("connected");
+            console.error('WebSocket Connection closed', error);
+
+            setTimeout(createConnection, 1000);
+        };
+
+        // Log messages from the server
+        ws.onmessage = function (e) {
+            var log = parseLog(e.data);
+
+            logEntries.push(log);
+
+            publishLog(log);
+        };
+
+        return ws;
+    }
 
     function parseLog(message) {
-        return JSON.parse(message)["log"];
+        return JSON.parse(message);
     }
 
     function publishLog(log) {
-        console.log(new Date(log.timestamp), log.info, log.entry);
+        console.log(log);
         logView.addLogEntry(log);
     }
-
-    var logEntries = [];
-
-    osl.snapshot = function() {
-        console.log(logEntries);
-        return logEntries;
-    };
 
     return connection;
 }
@@ -92,45 +99,93 @@ function app(connectionUrl) {
 
 var logView = {
     reset: function() {
-        var $logsContainer = $(".log-list-container ul");
-        $logsContainer.children("li").remove();
+        var $logsContainer = $(".log-list-container>div.list-group");
+        $logsContainer.children().remove();
         $logsContainer.off();
 
-        $logsContainer.on("click", "li", null, function() {
-            $logsContainer.children("li").removeClass("selected");
-            $(this).addClass("selected");
+        $logsContainer.on("click", "a", null, function() {
+            $logsContainer.children("a").removeClass("active");
+            $(this).addClass("active");
 
             logView.displayLog($(this).data("log"));
         });
 
-        var $logContainer = $(".json-viewer-container > div");
-        $logContainer.children("pre").off();
+        var $logContainer = $(".json-viewer-container>div");
+        $logContainer.off();
         $logContainer.children().remove();
-        $logContainer.append("<h3></h3><time></time><pre class='prettyprint'></pre>");
 
-        $logContainer.children("pre").on("click", ".entry .key", null, function() {
+        $logContainer.on("click", ".entry .key", null, function() {
             $(this).parent(".entry").toggleClass("collapsed");
         });
 
     },
 
+    displayLogTimestamp: function(log) {
+        return "<p class='list-group-item-text'>" + log.date + " " + log.time + "</p>";
+    },
+
+    displayLogSeverity: function(log) {
+        return '<div class="badge alert-' + getSeverityPostfix(log.severity) + '">' + log.severity + '</div>';
+    },
+
+    displayLogMessage: function(log) {
+        return "<h4 class='list-group-item-heading'>" + log.message + "</h4>"
+    },
+
+    displayLogEntry: function(log) {
+        return this.displayLogSeverity(log) + this.displayLogTimestamp(log) + this.displayLogMessage(log);
+    },
+
     addLogEntry: function(log) {
-        var $entry = $("<li>")
-            .text(new Date(log.timestamp) + ", " + log.info)
+        var $entry = $("<a href='#'>")
+            .addClass("list-group-item")
+            .addClass("list-group-item--" + getSeverityPostfix(log.severity))
+            .html(this.displayLogEntry(log))
             .data({log: log});
-        $(".log-list-container ul").prepend($entry);
+        $(".log-list-container>div").prepend($entry);
     },
 
     displayLog: function(log) {
-        var $logContainer = $(".json-viewer-container > div");
-        $logContainer.children("h3").text(log.info);
-        $logContainer.children("time").text(new Date(log.timestamp));
 
-        $logContainer.children("pre").html(getHTMLConverter(log.entry)(log.entry));
-        $logContainer.children(".prettyprinted").removeClass("prettyprinted");
+        var $logContainer = $(".json-viewer-container > div"),
+            logContent = [
+                '<div class="panel panel-default panel-', getSeverityPostfix(log.severity),'">',
+                    '<div class="panel-heading">',
+                        '<h3 class="panel-title">', log.message, '</h3>',
+                    '</div>',
+                    '<div class="panel-heading">',
+                        '<div class="panel-title">', this.displayLogTimestamp(log), '</div>',
+                    '</div>',
+                    '<div class="panel-body">',
+                        '<pre>', getHTMLConverter(log.metadata)(log.metadata),'</pre>',
+                    '</div>',
+                '</div>'
+            ].join("");
+
+
+        $logContainer.html(logContent);
 
     }
 };
+
+function getSeverityPostfix(severity) {
+    // available severity levels
+    //debug | info | notice | warning | error | critical | alert | emergency | none
+    //debug, (info, notice, warning), error, (critical, alert, emergency)
+
+    return {
+            "debug": "info",
+            "info": "success",
+            "notice": "success",
+            //"info": "info",
+            //"notice": "info",
+            "warning": "warning",
+            "error": "danger",
+            "critical": "danger",
+            "alert": "danger",
+            "emergency": "danger"
+        }[severity] || ""
+}
 
 
 function getHTMLConverter(token) {
@@ -151,10 +206,10 @@ function getHTMLConverter(token) {
 }
 
 var comma = "<span class='comma'>,</span>",
-    squareOpen = "<span class='square open'>[</span>",
-    squareClose = "<span class='square close'>]</span>",
-    curlyOpen = "<span class='curly open'>{</span>",
-    curlyClose = "<span class='curly close'>}</span>";
+    squareOpen = "<span class='square begin'>[</span>",
+    squareClose = "<span class='square end'>]</span>",
+    curlyOpen = "<span class='curly begin'>{</span>",
+    curlyClose = "<span class='curly end'>}</span>";
 
 function objToHTML(obj) {
     var keys = Object.keys(obj);

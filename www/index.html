@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <title>IvanOS Log Debugger</title>
 
+    <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
 
         body {
             margin: 0;
+            overflow: hidden;
         }
 
         .status.connected .connected {
@@ -27,39 +30,43 @@
             color: red;
         }
 
-        .container {
+        .logs-container {
             display: flex;
-
-            justify-content: center;
-            align-items: stretch;
-            height: 100%;
-            width: 100%;
+            flex-direction: row;
+            flex: 1;
             position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .list-group {
+            margin-bottom: 0;
+            padding: 20px 0 20px 20px;
         }
 
         .json-viewer-container {
             flex: 1;
+            padding: 20px 20px 20px 0;
         }
 
         .log-list-container {
             display: flex;
             flex-direction: column;
+            margin-right: 20px;
+            width: 33%;
+            margin-bottom: 50px;
         }
         
         .log-list-container > div {
             overflow: auto;
         }
 
-        .container > div {
-            margin: 0 20px
-        }
-
-        .log-list-container li.selected {
-            background-color: darkgray;
+        .severity {
+            display: inline-block;
+            width: 50px;
         }
 
 
-        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
         .str { color: #e10000; }
         .num { color: #0000e1; }
         .bool { color: #0000e1; }
@@ -73,6 +80,10 @@
         .entry {
             display: block;
         }
+
+        /*.begin, .end {*/
+            /*display: block;*/
+        /*}*/
 
         .arr>.entry,
         .obj>.entry {
@@ -104,58 +115,26 @@
         
     </style>
 
+
 </head>
 <body>
-    <div class="container">
-        <div>
-            <h1>IvanOS Log Debugger</h1>
-            <p class="status">
-                <span>Status: </span>
-                <span class="connected">Connected</span>
-                <span class="disconnected">Disconnected</span>
-            </p>
-            <section>
-                <p>
-                    Open developer console to see logs.
-                </p>
-                <!--<p>You may use console filtering for log filtering</p>-->
-                <section>
-                    <h2>Console Commands:</h2>
-                    <table>
-                        <tr>
-                            <th>command</th>
-                            <th>description</th>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:osl.snapshot()">osl.snapshot()</a></td>
-                            <td>list of currently available logs</td>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:console.clear()">console.clear()</a></td>
-                            <td>Clear console</td>
-                        </tr>
-                    </table>
-                </section>
-            </section>
+    <nav class="nav navbar-default">
+        <div class="navbar-header">
+            <div class="navbar-brand">Log viewer</div>
         </div>
+        <p class="status navbar-text">
+            <span>Status: </span>
+            <span class="connected">Connected</span>
+            <span class="disconnected">Disconnected</span>
+        </p>
+    </nav>
+    <div class="logs-container">
         <div class="log-list-container">
-            <h1>Log Entries:</h1>
-            <div>
-                <ul>
-                    <li>Log 1:</li>
-                    <li>Log 2:</li>
-                    <li>Log 3:</li>
-                    <li>Log 4:</li>
-                    <li>Log 5:</li>
-                </ul>
+            <div class="list-group">
             </div>
         </div>
         <div class="json-viewer-container">
-            <h1>Log Entry:</h1>
             <div>
-                <h3>info</h3>
-                <time>Today</time>
-                <pre></pre>
             </div>
         </div>
     </div>
