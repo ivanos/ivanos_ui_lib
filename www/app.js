@@ -2,37 +2,9 @@
 document.addEventListener("DOMContentLoaded", function() {
     var connectionUrl = "ws://" + location.host + "/lager/websocket";
     //var connectionUrl = "ws://localhost:8080/lager/websocket";
-    //var connectionUrl = 'ws://html5rocks.websocket.org/echo';
 
     app(connectionUrl);
 });
-
-
-function debug(connection) {
-    function entry() {
-        return {
-            string: "secret",
-            number: Math.random(),
-            boolean: true,
-            array: ["1", "2", "3"],
-            object: {kitten: "mew"},
-            "null": null,
-            DOM: document
-        }
-    }
-
-    setInterval(function() {
-        var testJson = {
-            "date":  Date.now(),
-            "message": "generating process, etc",
-            "severity": "info",
-            "metadata": entry()
-        };
-
-        connection.send(JSON.stringify(testJson));
-    }, 1000);
-
-}
 
 function app(connectionUrl) {
 
@@ -61,7 +33,7 @@ function app(connectionUrl) {
             document.querySelector(".status").classList.remove("connected");
             console.error('WebSocket Connection closed', error);
 
-            setTimeout(createConnection, 1000);
+            setTimeout(createConnection, 5000);
         };
 
         // Log messages from the server
@@ -87,15 +59,6 @@ function app(connectionUrl) {
 
     return connection;
 }
-
-/***
- * log = {
- *      timestamp
- *      info
- *      entry
- * }
- *
- */
 
 var logView = {
     reset: function() {
@@ -151,7 +114,9 @@ var logView = {
             logContent = [
                 '<div class="panel panel-default panel-', getSeverityPostfix(log.severity),'">',
                     '<div class="panel-heading">',
-                        '<h3 class="panel-title">', log.message, '</h3>',
+                        '<h3 class="panel-title">',
+                            '<span class="severity-label label label-', getSeverityPostfix(log.severity) ,'">', log.severity, '</span> ',
+                            '<span>', log.message, '</span></h3>',
                     '</div>',
                     '<div class="panel-heading">',
                         '<div class="panel-title">', this.displayLogTimestamp(log), '</div>',
