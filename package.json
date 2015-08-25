@@ -1,0 +1,22 @@
+{
+  "name": "ivanos_ui_lib",
+  "version": "1.0.0",
+  "description": "IvanOS UI is a web UI for monitoring and debugging IvanOS.",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node_modules/.bin/bower install --allow-root"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivanos/ivanos_ui_lib.git"
+  },
+  "author": "",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/ivanos/ivanos_ui_lib/issues"
+  },
+  "homepage": "https://github.com/ivanos/ivanos_ui_lib",
+  "devDependencies": {
+    "bower": "^1.5.1"
+  }
+}

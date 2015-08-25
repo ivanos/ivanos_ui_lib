@@ -17,5 +17,9 @@ IvanOS UI is a web UI for monitoring and debugging IvanOS.
  [{ivanos_ui, "", {git, "https://github.com/ivanos/ivanos_ui_lib.git", {branch, "master"}}, [raw]}]
  }.
 
-{post_hooks, [{compile, "sh -c 'cp -r deps/ivanos_ui/www deps/ivanos_rest/priv/static'"}]}.
+{pre_hooks, [{'get-deps', "sh -c 'npm --version >> /dev/null"
+              " || (echo \"npm not installed\"; exit 1)'"}]}.
+
+{post_hooks, [{'get-deps', "sh -c 'cd deps/ivanos_ui && npm install --unsafe-perm && cd -'"},
+              {compile, "sh -c 'cp -r deps/ivanos_ui/www deps/ivanos_rest/priv/static'"}]}.
 ```
