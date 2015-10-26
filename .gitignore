@@ -12,5 +12,4 @@ rel/example_project
 .idea
 .DS_Store
 
-www/lib
 node_modules

@@ -1,0 +1,105 @@
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+.status.connected .connected {
+    display: inline;
+}
+
+.status .connected {
+    display: none;
+    color: green;
+}
+
+.status.connected .disconnected {
+    display: none;
+}
+
+.status .disconnected {
+    color: red;
+}
+
+.logs-container {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.list-group {
+    margin-bottom: 0;
+    padding: 20px 0 20px 20px;
+}
+
+.json-viewer-container {
+    flex: 1;
+    padding: 20px 20px 20px 0;
+}
+
+.log-list-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+    width: 33%;
+    margin-bottom: 50px;
+}
+
+.log-list-container > div {
+    overflow: auto;
+}
+
+.severity-label {
+    display: inline-block;
+    width: 80px;
+}
+
+
+.str { color: #e10000; }
+.num { color: #0000e1; }
+.bool { color: #0000e1; }
+.null { color: #8c8c8c; }
+.key { color: #b900b9; }
+
+.col::after {
+    content: " ";
+}
+
+.entry {
+    display: block;
+}
+
+/*.begin, .end {*/
+/*display: block;*/
+/*}*/
+
+.arr>.entry,
+.obj>.entry {
+    margin-left: 2ch;
+}
+
+.arr>.comma::after {
+    display: block;
+}
+
+.entry.collapsed .obj>*,
+.entry.collapsed .arr>* {
+    display: none;
+}
+
+.entry.collapsed .obj::after {
+    content: attr(data-items);
+}
+
+.entry.collapsed .arr::after {
+    content: attr(data-items);
+}
+
+.entry.collapsed .obj::after,
+.entry.collapsed .arr::after {
+    color: dimgray;
+    font-style: italic;
+}
